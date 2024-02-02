@@ -1,0 +1,59 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<main class="detail">
+    <div>
+        <h1>Корзина покупок</h1>
+    </div>
+    <div>    
+        {% for item in cart %}
+        {% with product=item.product %}
+            <div>
+                <img src="/media/{{product.cover_image}}" height="300px" width="300px" style="margin: 50px;">
+                    <p> {{ product.title }}</p>
+                    <p> {{ product.price }}</p>
+                <form action="{% url 'cart:cart_add' product.id %}" method="post">
+                {% csrf_token %}
+                {{ item.update_quantity_form.quantity }}
+                {{ item.update_quantity_form.update }}
+                <input type="submit" value="Обновить">
+                </from>
+            </div>
+            <div>
+                {{ item.total_price }}
+            </div>
+    {% endwith %}
+    {% endfor %}
+    </div>
+    <div>
+        Общая сумма покупок
+        <small> {{ cart.get_total_price }}</small>
+
+    </div>
+        <a href="buy_fondy" class="btn btn-secondary my-2">купить</a>
+
+
+
+
+<h1>Зона доставки</h1>
+<p id="geoX"></p>
+
+<script src="https://api-maps.yandex.ru/2.1/?apikey=c3ae6b7c-27b5-4f93-9cca-7fd89603303c&lang=ru_RU" type="text/javascript">
+</script>
+<script type="text/javascript">
+ymaps.ready(function () {
+    var myMap = new ymaps.Map('map', {
+            center: [43.2406528, 76.8704512],
+            zoom: 12,
+            controls: ['geolocationControl']
+        });
+});
+</script>
+
+
+<div id="map" style="width: 600px; height: 400px"></div>
+</main>
+{%endblock%}
+
+

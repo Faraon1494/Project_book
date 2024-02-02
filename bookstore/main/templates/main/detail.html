@@ -1,0 +1,25 @@
+{%extends 'main/base.html'%}
+{%block title%}
+<title>Main page</title>
+{%endblock%}
+
+{%block content%}
+<main class="detail">
+<p>Title: {{item.title}}</p>
+<p>Author: {{item.author}}</p>
+<p>Description: {{item.description}}</p>
+<p>Category: {{item.category}}</p>
+<p>Publisher: {{item.publisher}}</p>
+<img src="{{item.cover_image.url}}" height="300px">
+<p>{{item.price}} KZT</p>
+<form action="{% url 'cart:cart_add' item.id %}" method="post">
+    {{ cart_product_form }}
+    {% csrf_token %}
+    <input class="btn btn-sm btn-outline-secondary" type="submit" value="Добавить в корзину">
+</form>
+<a href="update" class="btn btn-secondary my-2">редактировать книгу</a>
+<a href="delete" class="btn btn-secondary my-2">удалить книгу</a>
+</main>
+
+
+{%endblock%}

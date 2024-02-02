@@ -1,0 +1,19 @@
+{%extends 'main/base.html'%}
+{% load static %}
+{%block title%}
+<title>Delete page</title>
+{%endblock%}
+
+{%block content%}
+<main class="detail">
+    <h1>{{item.title}}</h1>
+    <p>{{item.description}}</p>
+    <p>{{item.category}}</p>
+    <img src="{{item.cover_image.url}}" height="300px">
+    <form  method="post">
+        {{ book }}
+        {% csrf_token %}
+        <input type="submit" value="Delete">
+    </form>
+</main>
+{%endblock%}

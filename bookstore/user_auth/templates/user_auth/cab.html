@@ -1,0 +1,28 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<main class="detail">
+<h1>Личный кабинет</h1>
+
+{% if request.user.is_authenticated %}
+  <div>
+    <p>Вы авторизованы как {{ request.user.username }}</p>
+    <p>Ваша почта {{ request.user.email }}</p>
+  </div>
+{% endif %}
+
+<form method="post" action="{% url 'user_auth:cab' %}">
+  {% csrf_token %}
+  {{ user_form.as_p}}
+  <button type="submit">Отправить</button>
+</form>
+
+<!-- Отображение значения text_value, переданного из представления -->
+{% if text_value %}
+  <p>Введенный текст: {{ text_value }}</p>
+{% endif %}
+
+<a href="../../create/" class="btn btn-secondary my-2">Добавить новую книгу</a>
+</main>
+{% endblock %}

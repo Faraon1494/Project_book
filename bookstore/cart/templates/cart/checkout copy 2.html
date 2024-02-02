@@ -1,0 +1,82 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+
+{% block content %}
+  <h2>Оформление заказа</h2>
+<link rel="stylesheet" href="{% static 'main/css/checkout.css'%}" type="text/css">
+<form action="{% url 'cart:checkout' %}" method="post" id="payment-form">
+    {% csrf_token %}
+    <div class="form-row">
+      <label for="card-element">
+        Credit or debit card
+      </label>
+      <div id="card-element">
+        <!-- A Stripe Element will be inserted here. -->
+      </div>
+      <!-- Used to display form errors. -->
+      <div id="card-errors" role="alert"></div>
+    </div>
+  
+    <!-- Hidden input to store the PaymentMethod ID. -->
+    <input type="hidden" name="payment_method" id="payment_method">
+  
+    <button type="submit">Submit Payment</button>
+  </form>
+
+<!-- Ваш JavaScript-код для обработки платежа с использованием Stripe.js -->
+<script>
+  var stripe = Stripe('pk_test_51OOeK1Ib4d2N4zefpIQGhbTkn73n5m8iYhjvd09PNZv1HddCMFifsWNCX17YBsT4VDSFzvKtsYZbq0cgwyFbed5400NrjdB0nY');  // Замените 'your_public_key' на ваш публичный ключ Stripe
+  var elements = stripe.elements();
+
+  // Создание элемента Card.
+  var card = elements.create('card');
+
+  // Добавление элемента в DOM.
+  card.mount('#card-element');
+
+  // Обработка события при вводе данных карты
+  card.addEventListener('change', function(event) {
+    var displayError = document.getElementById('card-errors');
+    if (event.error) {
+      displayError.textContent = event.error.message;
+    } else {
+      displayError.textContent = '';
+    }
+  });
+
+var form = document.getElementById('payment-form');
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Создание PaymentIntent на сервере
+    fetch('/create_payment_intent/', {
+      method: 'POST',
+    })
+    .then(response => response.json())
+    .then(function(result) {
+      return stripe.confirmCardPayment(
+        result.client_secret,
+        {
+          payment_method: {
+            card: card,
+          },
+        }
+      );
+    })
+    .then(function(result) {
+      if (result.error) {
+        // Показ ошибки, если что-то пошло не так
+        var errorElement = document.getElementById('card-errors');
+        errorElement.textContent = result.error.message;
+      } else {
+        // Добавление способа оплаты к форме перед отправкой
+        document.getElementById('payment_method').value = result.paymentIntent.payment_method;
+        // Теперь вы можете отправить форму
+        form.submit();
+      }
+    });
+  });
+</script>
+ 
+{%endblock%}

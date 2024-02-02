@@ -1,0 +1,91 @@
+{%extends 'main/base.html'%}
+{% load cache %}
+
+{%block title%}
+<title>Main page</title>
+{%endblock%}
+
+{%block content%}
+
+<main>
+ 
+    <section class="py-5 text-center container">
+      <div class="row py-lg-5">
+        <form method="get">
+
+          <label for="title">Поиск:</label>
+          <input type="text" name="title" id="title" value="{% if title_query %}{{ title_query }}{% endif %}">
+          <label for="category">Категория:</label>
+          <select name="category">
+              <option value="" {% if not selected_category %}selected{% endif %}>-- Выберите категорию --</option>
+              {% for cat in categories %}
+                  <option value="{{ cat.name }}" {% if selected_category == cat.name %} selected {% endif %}>{{ cat.name }}</option>
+              {% endfor %}
+          </select>
+          <label for="author__query">Автор:</label>
+          <input type="text" name="author" id="author">
+      
+          <label for="min_price">Минимальная цена:</label>
+          <input type="number" name="min_price" id="min_price">
+      
+          <label for="max_price">Максимальная цена:</label>
+          <input type="number" name="max_price" id="max_price">
+      
+          <label for="sort_by">Сортировать по:</label>
+          <select name="sort_by" id="sort_by">
+              <option value="title">Названию</option>
+              <option value="author">Автору</option>
+              <option value="price">Цене</option>
+          </select>
+      
+          <input type="submit" class="btn btn-primary my-2" value="Поиск">
+          <a href="/" class="btn btn-secondary my-2">Очистить</a>
+
+      </form>
+      
+
+      </div>
+    </section>
+  
+    <div class="album py-5 bg-body-tertiary">
+      <div class="container">
+  
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3">
+            {%for item in items%}
+            <div class="col">
+            <div class="card shadow-sm">
+              {% if item.cover_image %}
+              <img src="{{ item.cover_image.url }}" height="450" alt="Book Cover">
+              {% else %}
+                  <p>No cover image available</p>
+              {% endif %}
+              
+              <div class="card-body">
+                <p class="card-text">{{item.title}}</p>
+                <p class="card-text">{{item.description}}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    <a href="item/{{item.id}}" type="button" class="btn btn-sm btn-outline-secondary">View</a>
+                    <form action="{% url 'cart:cart_add' item.id %}" method="post">
+                      {{ cart_product_form }}
+                      {% csrf_token %}
+                      <input class="btn btn-sm btn-outline-secondary" type="submit" value="Add to cart">
+                  </form>
+                  </div>
+                  <small class="text-body-secondary">Цена {{item.price}} тг</small>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        {%endfor%} 
+        </div>
+    </div>
+  </div>
+
+  
+  </main>
+
+
+
+{%endblock%}
